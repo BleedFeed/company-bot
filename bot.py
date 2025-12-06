@@ -448,7 +448,7 @@ class SatisElemani:
 
 
 menajer = SatisElemani()
-menajer.giris("erenbaltali16@gmail.com", "976431258e")
+menajer.giris("e-mail@gmail.com", "sifre")
 menajer.sell_hours(60,24)
 
 
