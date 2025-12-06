@@ -1,6 +1,8 @@
 import json
 import logging
 import time
+from os import getenv
+from dotenv import load_dotenv, dotenv_values
 
 import requests
 from PIL import Image
@@ -12,7 +14,6 @@ from rich_pixels import Pixels
 
 from hash import lXt_py
 from profitCalculator import calculate_optimum_price, calculate_profit
-
 
 class SatisElemani:
     def __init__(self):
@@ -446,9 +447,9 @@ class SatisElemani:
 
 
 
-
+load_dotenv()
 menajer = SatisElemani()
-menajer.giris("e-mail@gmail.com", "sifre")
+menajer.giris(getenv("E-MAIL"), getenv("PASSWORD"))
 menajer.sell_hours(60,24)
 
 
