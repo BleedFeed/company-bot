@@ -212,35 +212,95 @@ def calculate_retail(
         "wagesTotal": wages_total,
         "secondsToFinish": total_time,
         "profit": profit,
-        "profitPerSeconds": profit / total_time,
     }
 
-def calculate_optimum_price(
-    building_level,
-    resource_id,
-    quality,
-    quantity,
-    skill_cmo,
-    skill_coo,
-    acceleration,
-    cogs,
-    sales_modif,
-    economy_state,
-    admin_overhead,
-    weather,
-    resource_info,
-    building_info
-):
-    resource_info
-    maxProfit = [0, {"profitPerSeconds": -math.inf}]
+def find_optimal_sale_for_hours(
+        hours,
+        building_level,
+        resource_id,
+        resource_quality_array,
+        sales_modif,
+        skill_cmo,
+        skill_coo,
+        economy_state,
+        admin_overhead,
+        weather,
+        acceleration,
+        resource_info,
+        building_info):
+    total_cost = 0
+    total_quantity = 0
+    quality_quantity_array = [0] * 13
+
+    highest_quality = 12
+    seconds_left = hours * 3600
+    while True:
+        quantity = 0
+        if highest_quality == -1:
+            print("kailte kontrol sonu envanterden cıkmadı hacı")
+            break
+        if resource_quality_array[highest_quality] is None:
+            highest_quality -= 1
+            continue
+
+        quality = highest_quality
+        quantity = resource_quality_array[quality]["amount"]
+        cost = resource_quality_array[quality]["cost"]
+
+        max_profit = 0
+        seconds_to_finish = math.inf
+
+        for i in range(0, int(resource_info[1]["averageRetailPrice"] * 10 * 2)):
+            result = calculate_retail(
+                building_level,
+                resource_id,
+                i / 10,
+                quantity,
+                quality,
+                cost,
+                sales_modif,
+                skill_cmo,
+                skill_coo,
+                acceleration,
+                economy_state,
+                admin_overhead,
+                weather,
+                resource_info,
+                building_info
+            )
+            if result["profit"] is not None:
+                if result["profit"] / result["secondsToFinish"] > max_profit / seconds_to_finish:
+                    max_profit = result["profit"]
+                    seconds_to_finish = result["secondsToFinish"]
+
+        seconds_left -= seconds_to_finish
+        if seconds_left < 0:
+            overshot_amount = abs(round(seconds_left / (seconds_to_finish / quantity)))
+            if overshot_amount > 0:
+                total_quantity += quantity - overshot_amount
+                total_cost += cost / quantity * (quantity - overshot_amount)
+                quality_quantity_array[quality] = quantity - overshot_amount
+                break
+        total_quantity += quantity
+        total_cost += cost
+        quality_quantity_array[quality] = quantity
+        highest_quality -= 1
+
+    average_quality = 0
+    for index,quantity in enumerate(quality_quantity_array):
+        average_quality += index * quantity/ total_quantity
+
+    optimum_price = 0
+    max_profit = 0
+    seconds_to_finish = math.inf
     for i in range(0, int(resource_info[1]["averageRetailPrice"] * 10 * 2)):
         result = calculate_retail(
             building_level,
             resource_id,
             i / 10,
-            quantity,
-            quality,
-            cogs,
+            total_quantity,
+            average_quality,
+            total_cost,
             sales_modif,
             skill_cmo,
             skill_coo,
@@ -251,10 +311,83 @@ def calculate_optimum_price(
             resource_info,
             building_info
         )
-        if result["profitPerSeconds"] is not None:
-            if (
-                max(result["profitPerSeconds"], maxProfit[1]["profitPerSeconds"])
-                == result["profitPerSeconds"]
-            ):
-                maxProfit = [i / 10, result]
-    return [maxProfit[0], maxProfit[1]["secondsToFinish"] / quantity]
+        if result["profit"] is not None:
+            if result["profit"] / result["secondsToFinish"] > max_profit / seconds_to_finish:
+                max_profit = result["profit"]
+                seconds_to_finish = result["secondsToFinish"]
+                optimum_price = i / 10
+
+    resource_quality_seconds = [0] * 13
+    for index,resource in enumerate(resource_quality_array):
+            if resource is not None:
+                seconds = calculate_retail(
+                    building_level,
+                    resource_id,
+                    optimum_price,
+                    resource["amount"],
+                    quality,
+                    resource["cost"],
+                    sales_modif,
+                    skill_cmo,
+                    skill_coo,
+                    acceleration,
+                    economy_state,
+                    admin_overhead,
+                    weather,
+                    resource_info,
+                    building_info
+                )["secondsToFinish"] / resource["amount"]
+                resource_quality_seconds[index] = seconds
+
+    overshot_seconds = hours * 3600 - seconds_to_finish
+    if overshot_seconds < 0:
+        overshot_by =  round(abs(overshot_seconds) / resource_quality_seconds[highest_quality])
+        if overshot_by > 0:
+            previous_quantity = total_quantity
+            total_quantity -= overshot_by
+            total_cost -= resource_quality_array[highest_quality]["cost"] / resource_quality_array[highest_quality]["amount"] * overshot_by
+            seconds_to_finish -= overshot_by * resource_quality_seconds[highest_quality]
+            average_quality = (average_quality * previous_quantity - highest_quality * overshot_by) / total_quantity
+    elif overshot_seconds > 0:
+        while True:
+            if highest_quality == 0:
+                print("sıctın yeterli ürün cıkmadı hacı eywah")
+                break
+            if resource_quality_array[highest_quality] is None:
+                highest_quality -= 1
+                continue
+            available_seconds = resource_quality_seconds[highest_quality] * resource_quality_array[highest_quality]["amount"]
+            if overshot_seconds - available_seconds < 0:
+                overshot_by =  round(abs(overshot_seconds) / resource_quality_seconds[highest_quality])
+                previous_quantity = total_quantity
+                total_quantity += overshot_by
+                total_cost += resource_quality_array[highest_quality]["cost"] / resource_quality_array[highest_quality]["amount"] * overshot_by
+                seconds_to_finish += overshot_by * resource_quality_seconds[highest_quality]
+                average_quality = (average_quality * previous_quantity + highest_quality * overshot_by) / total_quantity
+                break
+            previous_quantity = total_quantity
+            total_quantity += resource_quality_array[highest_quality]["amount"]
+            total_cost += resource_quality_array[highest_quality]["cost"]
+            seconds_to_finish += resource_quality_array[highest_quality]["amount"] * resource_quality_seconds[highest_quality]
+            average_quality = (average_quality * previous_quantity + highest_quality * resource_quality_array[highest_quality]["amount"]) / total_quantity
+            highest_quality -= 1
+
+    final_calculation  = calculate_retail(
+        building_level,
+        resource_id,
+        optimum_price,
+        total_quantity,
+        average_quality,
+        total_cost,
+        sales_modif,
+        skill_cmo,
+        skill_coo,
+        acceleration,
+        economy_state,
+        admin_overhead,
+        weather,
+        resource_info,
+        building_info
+    )
+
+    return total_quantity,total_cost,optimum_price,final_calculation["secondsToFinish"],average_quality

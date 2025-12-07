@@ -13,7 +13,7 @@ from rich.panel import Panel
 from rich_pixels import Pixels
 
 from hash import lXt_py
-from profitCalculator import calculate_optimum_price, calculate_retail
+from profitCalculator import find_optimal_sale_for_hours
 
 class SatisElemani:
     def __init__(self):
@@ -329,7 +329,8 @@ class SatisElemani:
                 resource_quality_array[resource["quality"]] = {"amount":resource["amount"],"cost":resource["cost"]["market"]}
 
         for building in self.account_data["buildings"]:
-            if "busy" not in building and building["kind"] == resource_info[1]["soldAt"]:
+            # if "busy" not in building and building["kind"] == resource_info[1]["soldAt"]:
+            if building["kind"] == resource_info[1]["soldAt"]:
                 available_buildings.append(building)
 
         return resource_info,building_info,available_buildings,acceleration,resource_quality_array
@@ -339,86 +340,28 @@ class SatisElemani:
 
         for building in available_buildings:
             building_level = building["size"]
-            total_quantity,info_array,total_cost = self.consume_inventory(hours,building_level,resource_id,resource_quality_array,acceleration,resource_info,building_info)
-            price_to_sell = 0
-            average_quality = 0
-            for index,info  in enumerate(info_array):
-                price_to_sell += info["cost"] * info["amount"] / total_quantity
-                average_quality += index * info["amount"] / total_quantity
-            price_to_sell = round(price_to_sell,1)
-
-            print(f"info: {info_array}")
-            print(f"quantity: {total_quantity}")
-            print(f"price: {price_to_sell}")
-            print(f"average_quality: {average_quality}")
-            print(f"cost: {total_cost}")
-
-            calculate_seconds_to_finish = calculate_retail(
-            building_level,
-            resource_id,
-            price_to_sell,
-            total_quantity,
-            average_quality,
-            total_cost,
-            self.account_data["sales_modifier"],
-            self.executives["cmo"]["skills"]["cmo"] if "cmo" in self.executives else 0,
-            self.executives["coo"]["skills"]["coo"] if "coo" in self.executives else 0,
-            acceleration,
-            self.economy_state,
-            self.account_data["admin_overhead"],
-            self.weather,
-            resource_info,
-            building_info)
-            self.sell_at_building(building["id"],resource_id,price_to_sell,total_quantity,calculate_seconds_to_finish["secondsToFinish"])
-
-    def consume_inventory(self,hours,building_level,resource_id,resource_quality_array,acceleration,resource_info,building_info):
-        total_cost = 0
-        total_quantity = 0
-        info_array = data = [{"cost": 0, "amount": 0} for _ in range(13)]
-
-        print(resource_quality_array)
-        highest_quality = 13
-        seconds_left = hours * 3600
-        while True:
-            quantity = 0
-            for quality in range(highest_quality-1,-1,-1):
-                if resource_quality_array[quality] is not None:
-                    highest_quality = quality
-                    quantity = resource_quality_array[quality]["amount"]
-                    cost = resource_quality_array[quality]["cost"]
-                    break
-            optimum_price = calculate_optimum_price(
+            total_quantity,total_cost,optimum_price,seconds_to_finish,average_quality = find_optimal_sale_for_hours(
+                hours,
                 building_level,
                 resource_id,
-                highest_quality,
-                quantity,
+                resource_quality_array,
+                self.account_data["sales_modifier"],
                 self.executives["cmo"]["skills"]["cmo"] if "cmo" in self.executives else 0,
                 self.executives["coo"]["skills"]["coo"] if "coo" in self.executives else 0,
-                acceleration,
-                cost,
-                self.account_data["sales_modifier"],
                 self.economy_state,
                 self.account_data["admin_overhead"],
                 self.weather,
+                acceleration,
                 resource_info,
-                building_info
-            )
-            seconds_left -= quantity * optimum_price[1]
-            if seconds_left < 0:
-                overshot_amount = abs(round(seconds_left / optimum_price[1]))
-                if overshot_amount > 0:
-                    total_quantity += quantity - overshot_amount
-                    total_cost += cost / quantity * (quantity - overshot_amount)
-                    info_array[quality]["amount"] = quantity - overshot_amount
-                    info_array[quality]["cost"] = optimum_price[0]
-                    seconds_left += overshot_amount * optimum_price[1]
-                    break
-            total_quantity += quantity
-            total_cost += cost
-            info_array[quality]["amount"] = quantity
-            info_array[quality]["cost"] = optimum_price[0]
+                building_info)
+            print(f"quantity: {total_quantity}")
+            print(f"price: {optimum_price}")
+            print(f"average_quality: {average_quality}")
+            print(f"cost: {total_cost}")
+            print(f"seconds to finish: {seconds_to_finish}")
+            print("\n\n\n\n")
 
-        return total_quantity,info_array,total_cost
+            # self.sell_at_building(building["id"],resource_id,price_to_sell,total_quantity,calculate_seconds_to_finish["secondsToFinish"])
 
     def sell_at_building(self,building_id,resource_id,price,amount,seconds_to_finish,):
         url = f"https://www.simcompanies.com/api/v1/buildings/{building_id}/busy/"
