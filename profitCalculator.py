@@ -149,7 +149,7 @@ def calculate_total_time(
     else:
         return h
 
-def calculate_profit(
+def calculate_retail(
     building_level,
     resource_id,
     price,
@@ -234,7 +234,7 @@ def calculate_optimum_price(
     resource_info
     maxProfit = [0, {"profitPerSeconds": -math.inf}]
     for i in range(0, int(resource_info[1]["averageRetailPrice"] * 10 * 2)):
-        result = calculate_profit(
+        result = calculate_retail(
             building_level,
             resource_id,
             i / 10,

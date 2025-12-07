@@ -13,7 +13,7 @@ from rich.panel import Panel
 from rich_pixels import Pixels
 
 from hash import lXt_py
-from profitCalculator import calculate_optimum_price, calculate_profit
+from profitCalculator import calculate_optimum_price, calculate_retail
 
 class SatisElemani:
     def __init__(self):
@@ -353,7 +353,7 @@ class SatisElemani:
             print(f"average_quality: {average_quality}")
             print(f"cost: {total_cost}")
 
-            calculate_seconds_to_finish = calculate_profit(
+            calculate_seconds_to_finish = calculate_retail(
             building_level,
             resource_id,
             price_to_sell,
@@ -414,6 +414,7 @@ class SatisElemani:
                     seconds_left += overshot_amount * optimum_price[1]
                     break
             total_quantity += quantity
+            total_cost += cost
             info_array[quality]["amount"] = quantity
             info_array[quality]["cost"] = optimum_price[0]
 
