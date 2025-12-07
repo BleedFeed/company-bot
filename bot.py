@@ -307,7 +307,6 @@ class SatisElemani:
             logging.error("Exception occurred", exc_info=True)
 
     def get_resource_object(self,resource_id):
-        ## normalde resourcesdan constanttanid ile dönülecek
         return [
             self.constants["resources"][str(resource_id)],
             self.get_encyclopedia_resource(resource_id)
@@ -329,8 +328,7 @@ class SatisElemani:
                 resource_quality_array[resource["quality"]] = {"amount":resource["amount"],"cost":resource["cost"]["market"]}
 
         for building in self.account_data["buildings"]:
-            # if "busy" not in building and building["kind"] == resource_info[1]["soldAt"]:
-            if building["kind"] == resource_info[1]["soldAt"]:
+            if "busy" not in building and building["kind"] == resource_info[1]["soldAt"]:
                 available_buildings.append(building)
 
         return resource_info,building_info,available_buildings,acceleration,resource_quality_array
@@ -361,7 +359,7 @@ class SatisElemani:
             print(f"seconds to finish: {seconds_to_finish}")
             print("\n\n\n\n")
 
-            # self.sell_at_building(building["id"],resource_id,price_to_sell,total_quantity,calculate_seconds_to_finish["secondsToFinish"])
+            self.sell_at_building(building["id"],resource_id,price_to_sell,total_quantity,calculate_seconds_to_finish["secondsToFinish"])
 
     def sell_at_building(self,building_id,resource_id,price,amount,seconds_to_finish,):
         url = f"https://www.simcompanies.com/api/v1/buildings/{building_id}/busy/"
