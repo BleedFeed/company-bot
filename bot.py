@@ -2,9 +2,9 @@ import json
 import logging
 import time
 from os import getenv
-from dotenv import load_dotenv, dotenv_values
 
 import requests
+from dotenv import load_dotenv
 from PIL import Image
 from requests.models import HTTPError
 from rich.columns import Columns
@@ -14,6 +14,7 @@ from rich_pixels import Pixels
 
 from hash import lXt_py
 from profitCalculator import find_optimal_sale_for_hours
+
 
 class SatisElemani:
     def __init__(self):
@@ -196,9 +197,9 @@ class SatisElemani:
             executives = executives_response.json()["executives"]
             for executive in executives:
                 if "currentTraining" not in executive:
-                    self.executives[f"c{executive['currentWorkHistory']['position']}o"] = (
-                        executive
-                    )
+                    self.executives[
+                        f"c{executive['currentWorkHistory']['position']}o"
+                    ] = executive
         except Exception:
             logging.error("Exception occurred", exc_info=True)
 
@@ -227,7 +228,7 @@ class SatisElemani:
                 f"[bold white]Sıralama:[/bold white] {self.account_data['rank']}",
                 f"[bold white]Perakende Yüzdesi:[/bold white] %{self.account_data['sales_modifier']}",
                 f"[bold white]Üretim Yüzdesi:[/bold white] %{self.account_data['production_modifier']}",
-                f"[bold white]Yönetim giderleri:[/bold white] %{round((self.account_data['admin_overhead'] * 100) - 100,3)}",
+                f"[bold white]Yönetim giderleri:[/bold white] %{round((self.account_data['admin_overhead'] * 100) - 100, 3)}",
             ]
         )
 
@@ -294,10 +295,10 @@ class SatisElemani:
         except Exception:
             logging.error("An unexpected error occurred", exc_info=True)
 
-    def get_market_price(self,resource_id):
+    def get_market_price(self, resource_id):
         try:
             url = f"https://www.simcompanies.com/api/v3/market-ticker/{self.realm_id}/"
-            market_ticker = self.s.get(url,headers=self.headers)
+            market_ticker = self.s.get(url, headers=self.headers)
             market_ticker.raise_for_status()
             for resource in market_ticker.json():
                 if resource["kind"] == resource_id:
@@ -306,15 +307,26 @@ class SatisElemani:
         except Exception:
             logging.error("Exception occurred", exc_info=True)
 
-    def get_resource_object(self,resource_id):
+    def get_resource_object(self, resource_id):
         return [
             self.constants["resources"][str(resource_id)],
-            self.get_encyclopedia_resource(resource_id)
+            self.get_encyclopedia_resource(resource_id),
         ]
 
-    def get_sale_context(self,resource_id):
+    def get_resource_quality_array(self, resource_id):
+        resource_quality_array = [None] * 13
+        for resource in self.owned_resources:
+            if resource["kind"] == resource_id:
+                resource_quality_array[resource["quality"]] = {
+                    "amount": resource["amount"],
+                    "cost": resource["cost"]["market"],
+                }
+        return resource_quality_array
+
+    def get_sale_context(self, resource_id):
         resource_info = self.get_resource_object(resource_id)
         building_info = self.constants["buildings"][resource_info[1]["soldAt"]]
+        self.get_owned_resources()
         available_buildings = []
         acceleration = 1
         if self.acceleration_events is not None:
@@ -322,37 +334,57 @@ class SatisElemani:
                 if event["kind"] == resource_id:
                     acceleration = round((100 + event["speedModifier"] / 100), 2)
 
-        resource_quality_array = [None] * 13
-        for resource in self.owned_resources:
-            if resource["kind"] == resource_id:
-                resource_quality_array[resource["quality"]] = {"amount":resource["amount"],"cost":resource["cost"]["market"]}
-
         for building in self.account_data["buildings"]:
-            # if "busy" not in building and building["kind"] == resource_info[1]["soldAt"]:
-            if  building["kind"] == resource_info[1]["soldAt"]: # for testing
+            if (
+                "busy" not in building
+                and building["kind"] == resource_info[1]["soldAt"]
+            ):
+                # if  building["kind"] == resource_info[1]["soldAt"]: # for testing
                 available_buildings.append(building)
 
-        return resource_info,building_info,available_buildings,acceleration,resource_quality_array
+        return (
+            resource_info,
+            building_info,
+            available_buildings,
+            acceleration,
+        )
 
-    def sell_hours(self, resource_id,hours):
-        resource_info, building_info,available_buildings,acceleration,resource_quality_array = self.get_sale_context(resource_id)
+    def sell_hours(self, resource_id, hours):
+        (
+            resource_info,
+            building_info,
+            available_buildings,
+            acceleration,
+        ) = self.get_sale_context(resource_id)
 
         for building in available_buildings:
             building_level = building["size"]
-            total_quantity,total_cost,optimum_price,seconds_to_finish,average_quality = find_optimal_sale_for_hours(
+            resource_quality_array = self.get_resource_quality_array(resource_id)
+            (
+                total_quantity,
+                total_cost,
+                optimum_price,
+                seconds_to_finish,
+                average_quality,
+            ) = find_optimal_sale_for_hours(
                 hours,
                 building_level,
                 resource_id,
                 resource_quality_array,
                 self.account_data["sales_modifier"],
-                self.executives["cmo"]["skills"]["cmo"] if "cmo" in self.executives else 0,
-                self.executives["coo"]["skills"]["coo"] if "coo" in self.executives else 0,
+                self.executives["cmo"]["skills"]["cmo"]
+                if "cmo" in self.executives
+                else 0,
+                self.executives["coo"]["skills"]["coo"]
+                if "coo" in self.executives
+                else 0,
                 self.economy_state,
                 self.account_data["admin_overhead"],
                 self.weather,
                 acceleration,
                 resource_info,
-                building_info)
+                building_info,
+            )
             print(f"quantity: {total_quantity}")
             print(f"price: {optimum_price}")
             print(f"average_quality: {average_quality}")
@@ -360,43 +392,53 @@ class SatisElemani:
             print(f"seconds to finish: {seconds_to_finish}")
             print("\n\n\n\n")
 
-            # self.sell_at_building(building["id"],resource_id,optimum_price,total_quantity,seconds_to_finish)
+            self.sell_at_building(
+                building["id"],
+                resource_id,
+                optimum_price,
+                total_quantity,
+                seconds_to_finish,
+            )
 
-    def sell_at_building(self,building_id,resource_id,price,amount,seconds_to_finish,):
+    def sell_at_building(
+        self,
+        building_id,
+        resource_id,
+        price,
+        amount,
+        seconds_to_finish,
+    ):
         url = f"https://www.simcompanies.com/api/v1/buildings/{building_id}/busy/"
         data = json.dumps(
             {
-            "kind": resource_id,
-            "amount": amount,
-            "price": price,
-            "estimatedSecondsToFinish": seconds_to_finish,
+                "kind": resource_id,
+                "amount": amount,
+                "price": price,
+                "estimatedSecondsToFinish": seconds_to_finish,
             }
         )
         (seconds, prot_hash) = self.generate_headers(url)
         sell_headers = self.headers | {
-        "Content-Type": "application/json",
-        "Content-Length": str(len(data)),
-        "X-CSRFToken": self.csrf,
-        "X-tz-offset": str(self.tz_offset),
-        "X-Ts": str(seconds),
-        "X-Prot": prot_hash,
+            "Content-Type": "application/json",
+            "Content-Length": str(len(data)),
+            "X-CSRFToken": self.csrf,
+            "X-tz-offset": str(self.tz_offset),
+            "X-Ts": str(seconds),
+            "X-Prot": prot_hash,
         }
         try:
-            sell_response = self.s.post(url,headers=sell_headers,data=data)
+            sell_response = self.s.post(url, headers=sell_headers, data=data)
             sell_response.raise_for_status()
-            time.sleep(0.2)
-            self.get_owned_resources()
             print("sanırım oldu bak bakim")
-            time.sleep(0.3)
+            time.sleep(0.5)
         except Exception:
             logging.error("Exception occurred", exc_info=True)
-
 
 
 load_dotenv()
 menajer = SatisElemani()
 menajer.giris(getenv("E-MAIL"), getenv("PASSWORD"))
-menajer.sell_hours(60,24)
+menajer.sell_hours(60, 1 / 60)
 
 
 # YAPILACAKLAR:
