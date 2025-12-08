@@ -328,8 +328,8 @@ class SatisElemani:
                 resource_quality_array[resource["quality"]] = {"amount":resource["amount"],"cost":resource["cost"]["market"]}
 
         for building in self.account_data["buildings"]:
-            if "busy" not in building and building["kind"] == resource_info[1]["soldAt"]:
-            # if  building["kind"] == resource_info[1]["soldAt"]: # for testing
+            # if "busy" not in building and building["kind"] == resource_info[1]["soldAt"]:
+            if  building["kind"] == resource_info[1]["soldAt"]: # for testing
                 available_buildings.append(building)
 
         return resource_info,building_info,available_buildings,acceleration,resource_quality_array
@@ -360,7 +360,7 @@ class SatisElemani:
             print(f"seconds to finish: {seconds_to_finish}")
             print("\n\n\n\n")
 
-            self.sell_at_building(building["id"],resource_id,optimum_price,total_quantity,seconds_to_finish)
+            # self.sell_at_building(building["id"],resource_id,optimum_price,total_quantity,seconds_to_finish)
 
     def sell_at_building(self,building_id,resource_id,price,amount,seconds_to_finish,):
         url = f"https://www.simcompanies.com/api/v1/buildings/{building_id}/busy/"
