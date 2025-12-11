@@ -1,59 +1,6 @@
 import json
 import math
 
-core_constants = {
-    "AVERAGE_SALARY": 345,
-    "REALM_PHASE_START": 0,
-    "REALM_PHASE_FASHION": 1,
-    "SALARY_MID": {0: 655, 1: 700, 2: 745},
-    "ROBOT_COST": 940,
-    "SALES": {
-        "G": [3, 4, 5, 7, 8, 9, 119, 123, 124, 125, 126, 122, 127, 140, 151, 152],
-        "A": [11, 12],
-        "C": [24, 25, 26, 27, 28, 98],
-        "2": [53, 54, 55, 56, 57],
-        "H": [60, 61, 62, 63, 64, 65, 70, 71],
-        "B": [91, 94, 95, 96, 97, 99],
-        "d": [102, 103, 108, 109, 110],
-        "r": [
-            117,
-            121,
-            134,
-            122,
-            119,
-            123,
-            129,
-            130,
-            131,
-            142,
-            143,
-            132,
-            124,
-            125,
-            126,
-            149,
-        ],
-        "t": [146, 147, 148],
-        "u": [67, 144, 150],
-        "z": [153, 154],
-    },
-    "PURCHASE_SIMBOOSTS_FEE": 0.1,
-    "PRODUCTION_SPEED_MODIFIER_DAYS": 21,
-    "PRODUCTION_SPEED_MODIFIER_RESOURCES": 3,
-    "PRODUCTION_SPEED_MODIFIER_FIRST_DAY": 0,
-    "LAUNCH_QUEUE_MAX": 30,
-    "TUTORIAL_BONUS": 12000,
-    "PROFIT_PER_BUILDING_LEVEL": 320,
-    "RETAIL_MODELING_QUALITY_WEIGHT": 0.3,
-    "TUTORIAL_APPLES_QUANTITY": 50,
-    "TUTORIAL_APPLES_RETAIL_PRICE": 7,
-    "PLAZA_MAP_POSITION": "P",
-    "PLAZA_DISABLED": "plaza-disabled",
-    "RETAIL_ADJUSTMENT": {"H": 0.9, "B": 2.3},
-    "TAG_EXPIRY_DAYS": 3,
-    "MIN_WEATHER_SPEED_MULTIPLIER": 0.3,
-    "MAX_WEATHER_SPEED_MULTIPLIER": 1.7,
-}
 econ_state_constants = {
     0: json.loads(
         '{"1":{"buildingLevelsNeededPerUnitPerHour":0.00035971238877671166,"modeledProductionCostPerUnit":0.14892092895355866,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"2":{"buildingLevelsNeededPerUnitPerHour":0.0006472608791607003,"modeledProductionCostPerUnit":0.22826903427556022,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"3":{"buildingLevelsNeededPerUnitPerHour":0.007956656285975621,"modeledProductionCostPerUnit":1.3234742787740026,"modeledStoreWages":151.8,"modeledUnitsSoldAnHour":110},"4":{"buildingLevelsNeededPerUnitPerHour":0.008378244840992382,"modeledProductionCostPerUnit":1.3671086942182373,"modeledStoreWages":151.8,"modeledUnitsSoldAnHour":90},"5":{"buildingLevelsNeededPerUnitPerHour":0.009815984260809504,"modeledProductionCostPerUnit":1.6771922574517373,"modeledStoreWages":151.8,"modeledUnitsSoldAnHour":80},"6":{"buildingLevelsNeededPerUnitPerHour":0.0027023028010543172,"modeledProductionCostPerUnit":0.37645485987857846,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"7":{"buildingLevelsNeededPerUnitPerHour":0.093871423707193,"modeledProductionCostPerUnit":24.42435003892025,"modeledStoreWages":151.8,"modeledUnitsSoldAnHour":35},"8":{"buildingLevelsNeededPerUnitPerHour":0.021782310884529647,"modeledProductionCostPerUnit":6.560739232246618,"modeledStoreWages":151.8,"modeledUnitsSoldAnHour":110},"9":{"buildingLevelsNeededPerUnitPerHour":0.004686999747628333,"modeledProductionCostPerUnit":0.7041533150198044,"modeledStoreWages":151.8,"modeledUnitsSoldAnHour":340},"10":{"buildingLevelsNeededPerUnitPerHour":0.031939943947957385,"modeledProductionCostPerUnit":15.598165187108206,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"11":{"buildingLevelsNeededPerUnitPerHour":0.05480224882248012,"modeledProductionCostPerUnit":22.019145846634075,"modeledStoreWages":379.5,"modeledUnitsSoldAnHour":103},"12":{"buildingLevelsNeededPerUnitPerHour":0.05453842856592886,"modeledProductionCostPerUnit":21.891720662719823,"modeledStoreWages":379.5,"modeledUnitsSoldAnHour":105},"13":{"buildingLevelsNeededPerUnitPerHour":0.0005730652373388453,"modeledProductionCostPerUnit":0.20309675148108994,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"14":{"buildingLevelsNeededPerUnitPerHour":0.016392875165325393,"modeledProductionCostPerUnit":5.56686477028074,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"15":{"buildingLevelsNeededPerUnitPerHour":0.015923056630880176,"modeledProductionCostPerUnit":5.1145404810531385,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"16":{"buildingLevelsNeededPerUnitPerHour":0.00994982277483476,"modeledProductionCostPerUnit":3.920971747599134,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"17":{"buildingLevelsNeededPerUnitPerHour":0.020781366308401276,"modeledProductionCostPerUnit":7.383700103514156,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"18":{"buildingLevelsNeededPerUnitPerHour":0.029026865079174673,"modeledProductionCostPerUnit":10.53951717864706,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"19":{"buildingLevelsNeededPerUnitPerHour":0.012647511435159827,"modeledProductionCostPerUnit":6.018881701103188,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"20":{"buildingLevelsNeededPerUnitPerHour":0.16179322207042274,"modeledProductionCostPerUnit":61.47775538339865,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"21":{"buildingLevelsNeededPerUnitPerHour":0.07312251566905718,"modeledProductionCostPerUnit":27.68220829953111,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"22":{"buildingLevelsNeededPerUnitPerHour":0.11993003420185322,"modeledProductionCostPerUnit":43.502134337506796,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"23":{"buildingLevelsNeededPerUnitPerHour":0.16179245472568812,"modeledProductionCostPerUnit":60.11399294904886,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"24":{"buildingLevelsNeededPerUnitPerHour":0.8174552306259395,"modeledProductionCostPerUnit":306.0610153417686,"modeledStoreWages":189.75,"modeledUnitsSoldAnHour":2},"25":{"buildingLevelsNeededPerUnitPerHour":1.0082745504308024,"modeledProductionCostPerUnit":376.7145254694643,"modeledStoreWages":189.75,"modeledUnitsSoldAnHour":0.8},"26":{"buildingLevelsNeededPerUnitPerHour":1.5691405121121074,"modeledProductionCostPerUnit":592.6567143980969,"modeledStoreWages":189.75,"modeledUnitsSoldAnHour":1.2},"27":{"buildingLevelsNeededPerUnitPerHour":0.7201712121519996,"modeledProductionCostPerUnit":272.96812469426237,"modeledStoreWages":189.75,"modeledUnitsSoldAnHour":2},"28":{"buildingLevelsNeededPerUnitPerHour":1.2225264120610222,"modeledProductionCostPerUnit":464.7056364772277,"modeledStoreWages":189.75,"modeledUnitsSoldAnHour":1.8},"29":{"buildingLevelsNeededPerUnitPerHour":0.19176423856665117,"modeledProductionCostPerUnit":86.00626099714304,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"30":{"buildingLevelsNeededPerUnitPerHour":0.2703491840801648,"modeledProductionCostPerUnit":158.55979646301665,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"31":{"buildingLevelsNeededPerUnitPerHour":0.2973841024881812,"modeledProductionCostPerUnit":174.4157761093183,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"32":{"buildingLevelsNeededPerUnitPerHour":0.3717301281102266,"modeledProductionCostPerUnit":218.0197201366479,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"33":{"buildingLevelsNeededPerUnitPerHour":0.23980825918447443,"modeledProductionCostPerUnit":99.28061930237241,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"34":{"buildingLevelsNeededPerUnitPerHour":0.19620675751457,"modeledProductionCostPerUnit":81.22959761103198,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"35":{"buildingLevelsNeededPerUnitPerHour":0.15651794867799013,"modeledProductionCostPerUnit":91.7977768996412,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"40":{"buildingLevelsNeededPerUnitPerHour":0.005601575818940184,"modeledProductionCostPerUnit":0.7571683838709796,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"41":{"buildingLevelsNeededPerUnitPerHour":0.015601353020668004,"modeledProductionCostPerUnit":2.2205691778690246,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"42":{"buildingLevelsNeededPerUnitPerHour":0.008453451433618569,"modeledProductionCostPerUnit":2.7054472790506323,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"43":{"buildingLevelsNeededPerUnitPerHour":0.017126315192031748,"modeledProductionCostPerUnit":6.17403432021729,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"44":{"buildingLevelsNeededPerUnitPerHour":0.001437739564446382,"modeledProductionCostPerUnit":0.49609673908957386,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"45":{"buildingLevelsNeededPerUnitPerHour":0.01786349532792241,"modeledProductionCostPerUnit":7.197232184577424,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"46":{"buildingLevelsNeededPerUnitPerHour":0.09020809678160922,"modeledProductionCostPerUnit":13.99074899295244,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"47":{"buildingLevelsNeededPerUnitPerHour":0.6104290342564718,"modeledProductionCostPerUnit":231.60891452504933,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"48":{"buildingLevelsNeededPerUnitPerHour":0.28244504250558594,"modeledProductionCostPerUnit":113.29493477503979,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"49":{"buildingLevelsNeededPerUnitPerHour":1.5258723596765205,"modeledProductionCostPerUnit":472.3582396556638,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"50":{"buildingLevelsNeededPerUnitPerHour":0.45565133321003354,"modeledProductionCostPerUnit":156.2695343392206,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"51":{"buildingLevelsNeededPerUnitPerHour":1.0841078526883412,"modeledProductionCostPerUnit":400.2431000828141,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"52":{"buildingLevelsNeededPerUnitPerHour":0.7308140591684127,"modeledProductionCostPerUnit":310.8250747345954,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"53":{"buildingLevelsNeededPerUnitPerHour":4.560052235449811,"modeledProductionCostPerUnit":1687.8849361990797,"modeledStoreWages":417.45000000000005,"modeledUnitsSoldAnHour":2},"54":{"buildingLevelsNeededPerUnitPerHour":8.788636563235729,"modeledProductionCostPerUnit":3197.2704512105124,"modeledStoreWages":417.45000000000005,"modeledUnitsSoldAnHour":0.5},"55":{"buildingLevelsNeededPerUnitPerHour":2.9467500182603947,"modeledProductionCostPerUnit":1128.4344845949863,"modeledStoreWages":417.45000000000005,"modeledUnitsSoldAnHour":2},"56":{"buildingLevelsNeededPerUnitPerHour":5.752700571774589,"modeledProductionCostPerUnit":2163.8843446509118,"modeledStoreWages":417.45000000000005,"modeledUnitsSoldAnHour":0.5},"57":{"buildingLevelsNeededPerUnitPerHour":6.89809996565229,"modeledProductionCostPerUnit":2800.8186015539704,"modeledStoreWages":417.45000000000005,"modeledUnitsSoldAnHour":1},"58":{"buildingLevelsNeededPerUnitPerHour":0.2145518064862712,"modeledProductionCostPerUnit":118.43259718042171,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"59":{"buildingLevelsNeededPerUnitPerHour":0.13536299192940082,"modeledProductionCostPerUnit":60.71030188033625,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"60":{"buildingLevelsNeededPerUnitPerHour":0.02147551883013843,"modeledProductionCostPerUnit":3.031204059575944,"modeledStoreWages":341.55,"modeledUnitsSoldAnHour":25},"61":{"buildingLevelsNeededPerUnitPerHour":0.059706390575262266,"modeledProductionCostPerUnit":9.0442889484398,"modeledStoreWages":341.55,"modeledUnitsSoldAnHour":20},"62":{"buildingLevelsNeededPerUnitPerHour":0.0595893971700014,"modeledProductionCostPerUnit":10.562846754036281,"modeledStoreWages":341.55,"modeledUnitsSoldAnHour":45},"63":{"buildingLevelsNeededPerUnitPerHour":0.10267849505389884,"modeledProductionCostPerUnit":16.566368979138637,"modeledStoreWages":341.55,"modeledUnitsSoldAnHour":30},"64":{"buildingLevelsNeededPerUnitPerHour":0.14967121715111928,"modeledProductionCostPerUnit":22.967675422490018,"modeledStoreWages":341.55,"modeledUnitsSoldAnHour":20},"65":{"buildingLevelsNeededPerUnitPerHour":0.018266278731175024,"modeledProductionCostPerUnit":6.794271587953286,"modeledStoreWages":341.55,"modeledUnitsSoldAnHour":30},"66":{"buildingLevelsNeededPerUnitPerHour":0.0011666052658007827,"modeledProductionCostPerUnit":0.1368713983386238,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"67":{"buildingLevelsNeededPerUnitPerHour":0.01580596186052483,"modeledProductionCostPerUnit":6.012056632869996,"modeledStoreWages":265.65,"modeledUnitsSoldAnHour":400},"68":{"buildingLevelsNeededPerUnitPerHour":0.0480293825327823,"modeledProductionCostPerUnit":17.326584414397228,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"69":{"buildingLevelsNeededPerUnitPerHour":9.651097492574104,"modeledProductionCostPerUnit":3484.03837109075,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"70":{"buildingLevelsNeededPerUnitPerHour":1.171979187382826,"modeledProductionCostPerUnit":414.50045675944665,"modeledStoreWages":341.55,"modeledUnitsSoldAnHour":3},"71":{"buildingLevelsNeededPerUnitPerHour":2.4362710363814073,"modeledProductionCostPerUnit":874.2521322995151,"modeledStoreWages":341.55,"modeledUnitsSoldAnHour":2},"72":{"buildingLevelsNeededPerUnitPerHour":0.004623471772874365,"modeledProductionCostPerUnit":0.9784896816680227,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"73":{"buildingLevelsNeededPerUnitPerHour":0.06909270830709047,"modeledProductionCostPerUnit":16.546109282630642,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"74":{"buildingLevelsNeededPerUnitPerHour":0.024404598446938926,"modeledProductionCostPerUnit":11.8847750515231,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"75":{"buildingLevelsNeededPerUnitPerHour":0.007091317840588088,"modeledProductionCostPerUnit":3.429813665615728,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"76":{"buildingLevelsNeededPerUnitPerHour":0.0702197573038314,"modeledProductionCostPerUnit":33.02304416068427,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"77":{"buildingLevelsNeededPerUnitPerHour":3.07913947623342,"modeledProductionCostPerUnit":1479.4815628903875,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"78":{"buildingLevelsNeededPerUnitPerHour":2.361869304691623,"modeledProductionCostPerUnit":1107.9873463098074,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"79":{"buildingLevelsNeededPerUnitPerHour":1.2113998066238363,"modeledProductionCostPerUnit":447.63822694155067,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"80":{"buildingLevelsNeededPerUnitPerHour":6.450771670973834,"modeledProductionCostPerUnit":2532.206502203341,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"81":{"buildingLevelsNeededPerUnitPerHour":6.979904573476434,"modeledProductionCostPerUnit":2706.1701510848534,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"82":{"buildingLevelsNeededPerUnitPerHour":1.8186262240734092,"modeledProductionCostPerUnit":807.9473834625043,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"83":{"buildingLevelsNeededPerUnitPerHour":0.03788662889523503,"modeledProductionCostPerUnit":18.27249498392215,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"84":{"buildingLevelsNeededPerUnitPerHour":11.121256546092946,"modeledProductionCostPerUnit":5211.376788985771,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"85":{"buildingLevelsNeededPerUnitPerHour":8.869272319897402,"modeledProductionCostPerUnit":4481.64655488864,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"86":{"buildingLevelsNeededPerUnitPerHour":13.494728570201662,"modeledProductionCostPerUnit":5779.008209684527,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"87":{"buildingLevelsNeededPerUnitPerHour":0.715367012707723,"modeledProductionCostPerUnit":284.71378285964937,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"88":{"buildingLevelsNeededPerUnitPerHour":15.186187554961595,"modeledProductionCostPerUnit":5981.438615190975,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"89":{"buildingLevelsNeededPerUnitPerHour":6.047645272750748,"modeledProductionCostPerUnit":2499.5926723132065,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"90":{"buildingLevelsNeededPerUnitPerHour":124.45655901448232,"modeledProductionCostPerUnit":53039.08408929955,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"91":{"buildingLevelsNeededPerUnitPerHour":134.69169576712605,"modeledProductionCostPerUnit":58557.42174864268,"modeledStoreWages":645.15,"modeledUnitsSoldAnHour":1},"92":{"buildingLevelsNeededPerUnitPerHour":760.5212233786567,"modeledProductionCostPerUnit":339396.4018208805,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"93":{"buildingLevelsNeededPerUnitPerHour":192.55246446317497,"modeledProductionCostPerUnit":84956.74362741587,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"94":{"buildingLevelsNeededPerUnitPerHour":957.1712811400706,"modeledProductionCostPerUnit":427463.2187616599,"modeledStoreWages":645.15,"modeledUnitsSoldAnHour":1},"95":{"buildingLevelsNeededPerUnitPerHour":262.3844933110772,"modeledProductionCostPerUnit":117914.49282217186,"modeledStoreWages":645.15,"modeledUnitsSoldAnHour":1},"96":{"buildingLevelsNeededPerUnitPerHour":91.33107300357611,"modeledProductionCostPerUnit":41489.74045268213,"modeledStoreWages":645.15,"modeledUnitsSoldAnHour":1},"97":{"buildingLevelsNeededPerUnitPerHour":37.652943523072466,"modeledProductionCostPerUnit":17513.118609185498,"modeledStoreWages":645.15,"modeledUnitsSoldAnHour":1},"98":{"buildingLevelsNeededPerUnitPerHour":1.0448969794204614,"modeledProductionCostPerUnit":420.8201217791812,"modeledStoreWages":189.75,"modeledUnitsSoldAnHour":1},"99":{"buildingLevelsNeededPerUnitPerHour":62.00401265930539,"modeledProductionCostPerUnit":26875.980514202518,"modeledStoreWages":645.15,"modeledUnitsSoldAnHour":1},"100":{"buildingLevelsNeededPerUnitPerHour":1094.4789502092506,"modeledProductionCostPerUnit":487374.40669411514,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"101":{"buildingLevelsNeededPerUnitPerHour":0.26907811342796484,"modeledProductionCostPerUnit":94.29300320910632,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"102":{"buildingLevelsNeededPerUnitPerHour":0.0031827458286481517,"modeledProductionCostPerUnit":1.1651455145971734,"modeledStoreWages":189.75,"modeledUnitsSoldAnHour":80},"103":{"buildingLevelsNeededPerUnitPerHour":0.009120622021295741,"modeledProductionCostPerUnit":3.1374566263259,"modeledStoreWages":189.75,"modeledUnitsSoldAnHour":60},"104":{"buildingLevelsNeededPerUnitPerHour":0.0013048634241621833,"modeledProductionCostPerUnit":0.4097826147199488,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"105":{"buildingLevelsNeededPerUnitPerHour":0.002002129754147992,"modeledProductionCostPerUnit":0.6518684314472183,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"106":{"buildingLevelsNeededPerUnitPerHour":0.01651424978952973,"modeledProductionCostPerUnit":2.3704627396742812,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"107":{"buildingLevelsNeededPerUnitPerHour":0.025575245849786113,"modeledProductionCostPerUnit":10.155587208610278,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"108":{"buildingLevelsNeededPerUnitPerHour":0.0161717325913024,"modeledProductionCostPerUnit":5.007986887264768,"modeledStoreWages":189.75,"modeledUnitsSoldAnHour":120},"109":{"buildingLevelsNeededPerUnitPerHour":0.13044007850686368,"modeledProductionCostPerUnit":54.61080455081742,"modeledStoreWages":189.75,"modeledUnitsSoldAnHour":30},"110":{"buildingLevelsNeededPerUnitPerHour":0.24475197927581513,"modeledProductionCostPerUnit":93.70469910367272,"modeledStoreWages":189.75,"modeledUnitsSoldAnHour":40},"111":{"buildingLevelsNeededPerUnitPerHour":3.2746640254695074,"modeledProductionCostPerUnit":1251.5039454899588,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"112":{"buildingLevelsNeededPerUnitPerHour":2.7786105791361364,"modeledProductionCostPerUnit":1120.309039116139,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"113":{"buildingLevelsNeededPerUnitPerHour":0.26978429158253375,"modeledProductionCostPerUnit":111.69069671516897,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"114":{"buildingLevelsNeededPerUnitPerHour":1.1373568596487593,"modeledProductionCostPerUnit":450.0799357108209,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"115":{"buildingLevelsNeededPerUnitPerHour":0.4632014786361744,"modeledProductionCostPerUnit":76.25805714851508,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"116":{"buildingLevelsNeededPerUnitPerHour":0.15667036680489477,"modeledProductionCostPerUnit":25.547332274047974,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"117":{"buildingLevelsNeededPerUnitPerHour":0.02716312370500713,"modeledProductionCostPerUnit":4.447784327589622,"modeledStoreWages":645.15,"modeledUnitsSoldAnHour":0},"118":{"buildingLevelsNeededPerUnitPerHour":0.0038668378537599253,"modeledProductionCostPerUnit":0.49698423783360896,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"119":{"buildingLevelsNeededPerUnitPerHour":0.07915340440267221,"modeledProductionCostPerUnit":20.333909694131275,"modeledStoreWages":151.8,"modeledUnitsSoldAnHour":100},"120":{"buildingLevelsNeededPerUnitPerHour":0.010590596932105841,"modeledProductionCostPerUnit":1.499320615679024,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"121":{"buildingLevelsNeededPerUnitPerHour":0.3010036854630962,"modeledProductionCostPerUnit":102.80449463965789,"modeledStoreWages":645.15,"modeledUnitsSoldAnHour":0},"122":{"buildingLevelsNeededPerUnitPerHour":0.19585073147614443,"modeledProductionCostPerUnit":68.46473147673622,"modeledStoreWages":151.8,"modeledUnitsSoldAnHour":30},"123":{"buildingLevelsNeededPerUnitPerHour":0.44821271146853675,"modeledProductionCostPerUnit":159.03103379479182,"modeledStoreWages":151.8,"modeledUnitsSoldAnHour":10},"124":{"buildingLevelsNeededPerUnitPerHour":0.07962872841025133,"modeledProductionCostPerUnit":18.945949161708363,"modeledStoreWages":151.8,"modeledUnitsSoldAnHour":15},"125":{"buildingLevelsNeededPerUnitPerHour":0.08975948829249263,"modeledProductionCostPerUnit":16.89245070832409,"modeledStoreWages":151.8,"modeledUnitsSoldAnHour":15},"126":{"buildingLevelsNeededPerUnitPerHour":0.10006218868465078,"modeledProductionCostPerUnit":27.05564531910737,"modeledStoreWages":151.8,"modeledUnitsSoldAnHour":10},"127":{"buildingLevelsNeededPerUnitPerHour":0.7886227809604395,"modeledProductionCostPerUnit":253.23826071143023,"modeledStoreWages":151.8,"modeledUnitsSoldAnHour":10},"128":{"buildingLevelsNeededPerUnitPerHour":0.1623572742082658,"modeledProductionCostPerUnit":39.99338778998053,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"129":{"buildingLevelsNeededPerUnitPerHour":2.3949330469904724,"modeledProductionCostPerUnit":1301.8137012401812,"modeledStoreWages":645.15,"modeledUnitsSoldAnHour":0},"130":{"buildingLevelsNeededPerUnitPerHour":2.106519892672926,"modeledProductionCostPerUnit":1223.6913011426147,"modeledStoreWages":645.15,"modeledUnitsSoldAnHour":0},"131":{"buildingLevelsNeededPerUnitPerHour":2.444440664728491,"modeledProductionCostPerUnit":1438.0083529777407,"modeledStoreWages":645.15,"modeledUnitsSoldAnHour":0},"132":{"buildingLevelsNeededPerUnitPerHour":2.693072531528546,"modeledProductionCostPerUnit":1360.6340543764206,"modeledStoreWages":645.15,"modeledUnitsSoldAnHour":0},"133":{"buildingLevelsNeededPerUnitPerHour":0.051188496190833946,"modeledProductionCostPerUnit":9.689998507598462,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"134":{"buildingLevelsNeededPerUnitPerHour":0.08105660496095848,"modeledProductionCostPerUnit":27.830671023453462,"modeledStoreWages":645.15,"modeledUnitsSoldAnHour":0},"135":{"buildingLevelsNeededPerUnitPerHour":0.02729500900341436,"modeledProductionCostPerUnit":9.588543099364351,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"136":{"buildingLevelsNeededPerUnitPerHour":0.007585614219595696,"modeledProductionCostPerUnit":0.962516358338825,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"137":{"buildingLevelsNeededPerUnitPerHour":0.22429799003643594,"modeledProductionCostPerUnit":68.40199024080067,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"138":{"buildingLevelsNeededPerUnitPerHour":1.18892159494102,"modeledProductionCostPerUnit":755.7035021369716,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"139":{"buildingLevelsNeededPerUnitPerHour":0.03558324791732778,"modeledProductionCostPerUnit":5.753246593382974,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"140":{"buildingLevelsNeededPerUnitPerHour":0.4059114692309673,"modeledProductionCostPerUnit":131.18093681651303,"modeledStoreWages":151.8,"modeledUnitsSoldAnHour":15},"141":{"buildingLevelsNeededPerUnitPerHour":0.13156882287550573,"modeledProductionCostPerUnit":24.744669158115787,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"142":{"buildingLevelsNeededPerUnitPerHour":0.9330220346093517,"modeledProductionCostPerUnit":433.8016721897065,"modeledStoreWages":645.15,"modeledUnitsSoldAnHour":0},"143":{"buildingLevelsNeededPerUnitPerHour":0.8722279929379774,"modeledProductionCostPerUnit":387.57643378551154,"modeledStoreWages":645.15,"modeledUnitsSoldAnHour":0},"144":{"buildingLevelsNeededPerUnitPerHour":0.021797073001285274,"modeledProductionCostPerUnit":8.435213774383472,"modeledStoreWages":265.65,"modeledUnitsSoldAnHour":70},"145":{"buildingLevelsNeededPerUnitPerHour":0.23781575473213756,"modeledProductionCostPerUnit":123.06965307388118,"modeledStoreWages":null,"modeledUnitsSoldAnHour":0},"146":{"buildingLevelsNeededPerUnitPerHour":0.014641104010023547,"modeledProductionCostPerUnit":2.837830037953344,"modeledStoreWages":227.7,"modeledUnitsSoldAnHour":50},"147":{"buildingLevelsNeededPerUnitPerHour":0.054467283285283837,"modeledProductionCostPerUnit":17.917971874476574,"modeledStoreWages":227.7,"modeledUnitsSoldAnHour":40},"148":{"buildingLevelsNeededPerUnitPerHour":0.08312990150585367,"modeledProductionCostPerUnit":16.015781374926302,"modeledStoreWages":227.7,"modeledUnitsSoldAnHour":12},"149":{"buildingLevelsNeededPerUnitPerHour":0.881609268312481,"modeledProductionCostPerUnit":412.44516132505004,"modeledStoreWages":645.15,"modeledUnitsSoldAnHour":0},"150":{"modeledStoreWages":265.65,"quality":{"0":{"buildingLevelsNeededPerUnitPerHour":0.9941841180091202,"modeledProductionCostPerUnit":81.62062060639829,"modeledStoreWages":265.65,"modeledUnitsSoldAnHour":5},"1":{"buildingLevelsNeededPerUnitPerHour":2.9527268304870873,"modeledProductionCostPerUnit":242.41324320100298,"modeledStoreWages":265.65,"modeledUnitsSoldAnHour":2.5},"2":{"buildingLevelsNeededPerUnitPerHour":6.820103049542564,"modeledProductionCostPerUnit":559.9174573598923,"modeledStoreWages":265.65,"modeledUnitsSoldAnHour":1.25},"3":{"buildingLevelsNeededPerUnitPerHour":14.4653789170327,"modeledProductionCostPerUnit":1187.5800298230952,"modeledStoreWages":265.65,"modeledUnitsSoldAnHour":0.625},"4":{"buildingLevelsNeededPerUnitPerHour":29.586919351951416,"modeledProductionCostPerUnit":2429.029669246413,"modeledStoreWages":265.65,"modeledUnitsSoldAnHour":0.3125},"5":{"buildingLevelsNeededPerUnitPerHour":59.501919462845855,"modeledProductionCostPerUnit":4884.994143292937,"modeledStoreWages":265.65,"modeledUnitsSoldAnHour":0.15625},"6":{"buildingLevelsNeededPerUnitPerHour":118.68570000792876,"modeledProductionCostPerUnit":9743.869687991828,"modeledStoreWages":265.65,"modeledUnitsSoldAnHour":0.078125},"7":{"buildingLevelsNeededPerUnitPerHour":235.77076358586285,"modeledProductionCostPerUnit":19356.330176807358,"modeledStoreWages":265.65,"modeledUnitsSoldAnHour":0.0390625},"8":{"buildingLevelsNeededPerUnitPerHour":467.3858375584476,"modeledProductionCostPerUnit":38371.486159479966,"modeledStoreWages":265.65,"modeledUnitsSoldAnHour":0.01953125},"9":{"buildingLevelsNeededPerUnitPerHour":925.5158209782302,"modeledProductionCostPerUnit":75983.08434111437,"modeledStoreWages":265.65,"modeledUnitsSoldAnHour":0.009765625},"10":{"buildingLevelsNeededPerUnitPerHour":1831.5854006082022,"modeledProductionCostPerUnit":150369.6693431676,"modeledStoreWages":265.65,"modeledUnitsSoldAnHour":0.0048828125},"11":{"buildingLevelsNeededPerUnitPerHour":3623.353727290139,"modeledProductionCostPerUnit":297470.43283104885,"modeledStoreWages":265.65,"modeledUnitsSoldAnHour":0.00244140625},"12":{"buildingLevelsNeededPerUnitPerHour":7166.1586573391805,"modeledProductionCostPerUnit":588327.9629805675,"modeledStoreWages":265.65,"modeledUnitsSoldAnHour":0.001220703125}}},"151":{"buildingLevelsNeededPerUnitPerHour":0.32914503765802516,"modeledProductionCostPerUnit":107.89335327083445,"modeledStoreWages":151.8,"modeledUnitsSoldAnHour":30},"152":{"buildingLevelsNeededPerUnitPerHour":0.38786175628722414,"modeledProductionCostPerUnit":121.66836559453718,"modeledStoreWages":151.8,"modeledUnitsSoldAnHour":40},"153":{"buildingLevelsNeededPerUnitPerHour":0.12226109435656624,"modeledProductionCostPerUnit":32.862982552890024,"modeledStoreWages":265.65,"modeledUnitsSoldAnHour":22},"154":{"buildingLevelsNeededPerUnitPerHour":0.1287182526735332,"modeledProductionCostPerUnit":29.95807111695399,"modeledStoreWages":265.65,"modeledUnitsSoldAnHour":18}}',
@@ -77,6 +24,7 @@ def calculate_overhead(admin_overhead, skill_coo):
     overhead = admin_overhead if admin_overhead is not None else 1
     return overhead - ((overhead - 1) * skill_coo) / 100
 
+
 def get_economy_state_resource_info(econ_state, resource_id, quality_variable_idk_yet):
     return (
         econ_state_constants[econ_state][str(resource_id)]
@@ -86,21 +34,35 @@ def get_economy_state_resource_info(econ_state, resource_id, quality_variable_id
         ]
     )
 
+
 def vIr(t, e, r, n):
     return e + (t + n) / r
+
 
 def yIr(t, e, r, n, i):
     a = (n + t) / ((e - i) * (e - i))
     return t - (r - e) * (r - e) * a
 
+
 def bIr(t, e, r, n, i=1):
     return (i * ((n - e) * 3600) - r) / (t + r)
 
-def mIr(building_salary_modifier, econ_state, quality, saturation, quantity, price):
+
+def mIr(
+    building_salary_modifier,
+    econ_state,
+    quality,
+    saturation,
+    quantity,
+    price,
+    core_constants,
+):
     p = min(max(2 - saturation, 0), 2)
     h = max(0.9, p / 2 + 0.5)
     quality_normalized = quality / 12
-    building_salary = building_salary_modifier if building_salary_modifier is not None else 1
+    building_salary = (
+        building_salary_modifier if building_salary_modifier is not None else 1
+    )
     s = (
         econ_state["modeledStoreWages"]
         if econ_state["modeledStoreWages"] is not None
@@ -114,7 +76,13 @@ def mIr(building_salary_modifier, econ_state, quality, saturation, quantity, pri
             + 1
         )
         * building_salary
-        * ((p / 2) * (1 + quality_normalized * core_constants["RETAIL_MODELING_QUALITY_WEIGHT"]))
+        * (
+            (p / 2)
+            * (
+                1
+                + quality_normalized * core_constants["RETAIL_MODELING_QUALITY_WEIGHT"]
+            )
+        )
         + s
     )
     v = econ_state["modeledUnitsSoldAnHour"] * h
@@ -127,6 +95,7 @@ def mIr(building_salary_modifier, econ_state, quality, saturation, quantity, pri
     h = yIr(m, b, price, c, econ_state["modeledProductionCostPerUnit"])
     return bIr(h, econ_state["modeledProductionCostPerUnit"], c, price, quantity)
 
+
 def calculate_total_time(
     building_salary_modifier,
     econ_state,
@@ -137,8 +106,18 @@ def calculate_total_time(
     saturation,
     acceleration_event,
     building_level,
-    season_modifier,):
-    d = mIr(building_salary_modifier, econ_state, quality, saturation, quantity, price)
+    season_modifier,
+    core_constants,
+):
+    d = mIr(
+        building_salary_modifier,
+        econ_state,
+        quality,
+        saturation,
+        quantity,
+        price,
+        core_constants,
+    )
     if d <= 0:
         return None
     p = d / acceleration_event / building_level
@@ -147,6 +126,7 @@ def calculate_total_time(
         return h / season_modifier["sellingSpeedMultiplier"]
     else:
         return h
+
 
 def calculate_retail(
     building_level,
@@ -164,8 +144,10 @@ def calculate_retail(
     weather,
     resource_info,
     building_info,
+    core_constants,
     r=None,
-    forceQuality=None,):
+    forceQuality=None,
+):
     if quantity is None or quality is None:
         print("fiyat veya miktar yok")
         return {
@@ -193,6 +175,7 @@ def calculate_retail(
         acceleration,
         building_level,
         weather if resource_info[0]["retailSeason"] is season_names["SUMMER"] else None,
+        core_constants,
     )
     if total_time is None:
         return {
@@ -212,16 +195,34 @@ def calculate_retail(
         "profit": profit,
     }
 
-def fix_overshoot(hours,resource_quality_seconds,resource_quality_array,total_quantity,total_cost,average_quality,seconds_to_finish,highest_quality):
+
+def fix_overshoot(
+    hours,
+    resource_quality_seconds,
+    resource_quality_array,
+    total_quantity,
+    total_cost,
+    average_quality,
+    seconds_to_finish,
+    highest_quality,
+):
     overshot_seconds = hours * 3600 - seconds_to_finish
     if overshot_seconds < 0:
-        overshot_by =  round(abs(overshot_seconds) / resource_quality_seconds[highest_quality])
+        overshot_by = round(
+            abs(overshot_seconds) / resource_quality_seconds[highest_quality]
+        )
         if overshot_by > 0:
             previous_quantity = total_quantity
             total_quantity -= overshot_by
-            total_cost -= resource_quality_array[highest_quality]["cost"] / resource_quality_array[highest_quality]["amount"] * overshot_by
+            total_cost -= (
+                resource_quality_array[highest_quality]["cost"]
+                / resource_quality_array[highest_quality]["amount"]
+                * overshot_by
+            )
             seconds_to_finish -= overshot_by * resource_quality_seconds[highest_quality]
-            average_quality = (average_quality * previous_quantity - highest_quality * overshot_by) / total_quantity
+            average_quality = (
+                average_quality * previous_quantity - highest_quality * overshot_by
+            ) / total_quantity
     elif overshot_seconds > 0:
         while True:
             if highest_quality == -1:
@@ -230,23 +231,43 @@ def fix_overshoot(hours,resource_quality_seconds,resource_quality_array,total_qu
             if resource_quality_array[highest_quality] is None:
                 highest_quality -= 1
                 continue
-            available_seconds = resource_quality_seconds[highest_quality] * resource_quality_array[highest_quality]["amount"]
+            available_seconds = (
+                resource_quality_seconds[highest_quality]
+                * resource_quality_array[highest_quality]["amount"]
+            )
             if overshot_seconds - available_seconds < 0:
-                overshot_by =  round(abs(overshot_seconds) / resource_quality_seconds[highest_quality])
+                overshot_by = round(
+                    abs(overshot_seconds) / resource_quality_seconds[highest_quality]
+                )
                 previous_quantity = total_quantity
                 total_quantity += overshot_by
-                total_cost += resource_quality_array[highest_quality]["cost"] / resource_quality_array[highest_quality]["amount"] * overshot_by
-                seconds_to_finish += overshot_by * resource_quality_seconds[highest_quality]
-                average_quality = (average_quality * previous_quantity + highest_quality * overshot_by) / total_quantity
+                total_cost += (
+                    resource_quality_array[highest_quality]["cost"]
+                    / resource_quality_array[highest_quality]["amount"]
+                    * overshot_by
+                )
+                seconds_to_finish += (
+                    overshot_by * resource_quality_seconds[highest_quality]
+                )
+                average_quality = (
+                    average_quality * previous_quantity + highest_quality * overshot_by
+                ) / total_quantity
                 break
             previous_quantity = total_quantity
             total_quantity += resource_quality_array[highest_quality]["amount"]
             total_cost += resource_quality_array[highest_quality]["cost"]
-            seconds_to_finish += resource_quality_array[highest_quality]["amount"] * resource_quality_seconds[highest_quality]
-            average_quality = (average_quality * previous_quantity + highest_quality * resource_quality_array[highest_quality]["amount"]) / total_quantity
+            seconds_to_finish += (
+                resource_quality_array[highest_quality]["amount"]
+                * resource_quality_seconds[highest_quality]
+            )
+            average_quality = (
+                average_quality * previous_quantity
+                + highest_quality * resource_quality_array[highest_quality]["amount"]
+            ) / total_quantity
             highest_quality -= 1
 
-    return total_quantity,total_cost,average_quality
+    return total_quantity, total_cost, average_quality
+
 
 def calculate_optimum_price(
     building_level,
@@ -262,8 +283,9 @@ def calculate_optimum_price(
     admin_overhead,
     weather,
     resource_info,
-    building_info):
-
+    building_info,
+    core_constants,
+):
     optimum_price = None
     max_profit = 0
     seconds_to_finish = math.inf
@@ -284,14 +306,19 @@ def calculate_optimum_price(
             admin_overhead,
             weather,
             resource_info,
-            building_info
+            building_info,
+            core_constants,
         )
         if result["profit"] is not None:
-            if result["profit"] / result["secondsToFinish"] > max_profit / seconds_to_finish:
+            if (
+                result["profit"] / result["secondsToFinish"]
+                > max_profit / seconds_to_finish
+            ):
                 max_profit = result["profit"]
                 seconds_to_finish = result["secondsToFinish"]
                 optimum_price = i / 10
     return optimum_price, seconds_to_finish
+
 
 def generate_price_seconds_array(
     building_level,
@@ -307,44 +334,53 @@ def generate_price_seconds_array(
     admin_overhead,
     weather,
     resource_info,
-    building_info):
-
+    building_info,
+    core_constants,
+):
     resource_quality_seconds = [0] * 13
-    for index,resource in enumerate(resource_quality_array):
+    for index, resource in enumerate(resource_quality_array):
         if resource is not None:
-            seconds = calculate_retail(
-                building_level,
-                resource_id,
-                optimum_price,
-                resource["amount"],
-                quality,
-                resource["cost"],
-                sales_modif,
-                skill_cmo,
-                skill_coo,
-                acceleration,
-                economy_state,
-                admin_overhead,
-                weather,
-                resource_info,
-                building_info)["secondsToFinish"] / resource["amount"]
+            seconds = (
+                calculate_retail(
+                    building_level,
+                    resource_id,
+                    optimum_price,
+                    resource["amount"],
+                    quality,
+                    resource["cost"],
+                    sales_modif,
+                    skill_cmo,
+                    skill_coo,
+                    acceleration,
+                    economy_state,
+                    admin_overhead,
+                    weather,
+                    resource_info,
+                    building_info,
+                    core_constants,
+                )["secondsToFinish"]
+                / resource["amount"]
+            )
             resource_quality_seconds[index] = seconds
     return resource_quality_seconds
 
+
 def find_optimal_sale_for_hours(
-        hours,
-        building_level,
-        resource_id,
-        resource_quality_array,
-        sales_modif,
-        skill_cmo,
-        skill_coo,
-        economy_state,
-        admin_overhead,
-        weather,
-        acceleration,
-        resource_info,
-        building_info):
+    hours,
+    building_level,
+    resource_id,
+    resource_quality_array,
+    sales_modif,
+    skill_cmo,
+    skill_coo,
+    economy_state,
+    admin_overhead,
+    weather,
+    acceleration,
+    resource_info,
+    building_info,
+    core_constants,
+):
     total_cost = 0
     total_quantity = 0
     quality_quantity_array = [0] * 13
@@ -366,21 +402,23 @@ def find_optimal_sale_for_hours(
         quantity = resource_quality_array[quality]["amount"]
         cost = resource_quality_array[quality]["cost"]
 
-        _,seconds_to_finish = calculate_optimum_price(
-          building_level,
-          resource_id,
-          quantity,
-          quality,
-          cost,
-          sales_modif,
-          skill_cmo,
-          skill_coo,
-          acceleration,
-          economy_state,
-          admin_overhead,
-          weather,
-          resource_info,
-          building_info)
+        _, seconds_to_finish = calculate_optimum_price(
+            building_level,
+            resource_id,
+            quantity,
+            quality,
+            cost,
+            sales_modif,
+            skill_cmo,
+            skill_coo,
+            acceleration,
+            economy_state,
+            admin_overhead,
+            weather,
+            resource_info,
+            building_info,
+            core_constants,
+        )
 
         seconds_left -= seconds_to_finish
         if seconds_left < 0:
@@ -397,10 +435,10 @@ def find_optimal_sale_for_hours(
 
     # calculate average_quality
     average_quality = 0
-    for index,quantity in enumerate(quality_quantity_array):
-        average_quality += index * quantity/ total_quantity
+    for index, quantity in enumerate(quality_quantity_array):
+        average_quality += index * quantity / total_quantity
 
-    optimum_price,seconds_to_finish = calculate_optimum_price(
+    optimum_price, seconds_to_finish = calculate_optimum_price(
         building_level,
         resource_id,
         total_quantity,
@@ -414,7 +452,9 @@ def find_optimal_sale_for_hours(
         admin_overhead,
         weather,
         resource_info,
-        building_info)
+        building_info,
+        core_constants,
+    )
 
     resource_quality_seconds = generate_price_seconds_array(
         building_level,
@@ -430,12 +470,23 @@ def find_optimal_sale_for_hours(
         admin_overhead,
         weather,
         resource_info,
-        building_info)
+        building_info,
+        core_constants,
+    )
 
     ## Improve on the previous guess
-    total_quantity,total_cost,average_quality = fix_overshoot(hours,resource_quality_seconds,resource_quality_array,total_quantity,total_cost,average_quality,seconds_to_finish,highest_quality)
+    total_quantity, total_cost, average_quality = fix_overshoot(
+        hours,
+        resource_quality_seconds,
+        resource_quality_array,
+        total_quantity,
+        total_cost,
+        average_quality,
+        seconds_to_finish,
+        highest_quality,
+    )
 
-    optimum_price,seconds_to_finish  = calculate_optimum_price(
+    optimum_price, seconds_to_finish = calculate_optimum_price(
         building_level,
         resource_id,
         total_quantity,
@@ -449,7 +500,8 @@ def find_optimal_sale_for_hours(
         admin_overhead,
         weather,
         resource_info,
-        building_info
+        building_info,
+        core_constants,
     )
 
-    return total_quantity,total_cost,optimum_price,seconds_to_finish,average_quality
+    return total_quantity, total_cost, optimum_price, seconds_to_finish, average_quality

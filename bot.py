@@ -384,6 +384,7 @@ class SatisElemani:
                 acceleration,
                 resource_info,
                 building_info,
+                self.constants["core"],
             )
             print(f"quantity: {total_quantity}")
             print(f"price: {optimum_price}")
@@ -438,7 +439,7 @@ class SatisElemani:
 load_dotenv()
 menajer = SatisElemani()
 menajer.giris(getenv("E-MAIL"), getenv("PASSWORD"))
-menajer.sell_hours(60, 1 / 60)
+menajer.sell_hours(60, 24)
 
 
 # YAPILACAKLAR:
