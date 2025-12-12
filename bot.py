@@ -5,12 +5,7 @@ from os import getenv
 
 import requests
 from dotenv import load_dotenv
-from PIL import Image
 from requests.models import HTTPError
-from rich.columns import Columns
-from rich.console import Console
-from rich.panel import Panel
-from rich_pixels import Pixels
 
 from hash import lXt_py
 from profitCalculator import find_optimal_sale_for_hours
@@ -138,6 +133,7 @@ class SatisElemani:
             }
             self.realm_id = acc_data["authCompany"]["realmId"]
             self.economy_state = acc_data["temporals"]["economyState"]
+            self.logo_url = acc_data["authCompany"]["logo"]
             self.get_realm_variables()
             time.sleep(0.2)
             self.get_admin_overhead()
@@ -146,7 +142,6 @@ class SatisElemani:
             time.sleep(0.2)
             self.get_buildings_state()
             time.sleep(0.2)
-            self.get_company_logo(acc_data["authCompany"]["logo"])
             time.sleep(0.2)
             self.get_executives()
             time.sleep(0.2)
@@ -203,45 +198,22 @@ class SatisElemani:
         except Exception:
             logging.error("Exception occurred", exc_info=True)
 
-    def get_company_logo(self, url):
-        try:
-            logo_response = self.s.get(url)
-            with open("logo.png", "wb") as f:
-                f.write(logo_response.content)
-        except Exception:
-            logging.error("Exception occurred", exc_info=True)
-
     def print_info(self):
-        console = Console()
-
-        pil_img = Image.open("logo.png")
-        pil_img = pil_img.resize((40, 40))
-
-        img = Pixels.from_image(pil_img)
-
-        # Right: System info
-        system_info = "\n".join(
+        account_info = "\n".join(
             [
-                f"[bold white]Şirket Adı:[/bold white] {self.account_data['name']}",
-                f"[bold white]Para:[/bold white] [green]${self.account_data['money']}[/green]",
-                f"[bold white]Level:[/bold white] {self.account_data['level']}",
-                f"[bold white]Sıralama:[/bold white] {self.account_data['rank']}",
-                f"[bold white]Perakende Yüzdesi:[/bold white] %{self.account_data['sales_modifier']}",
-                f"[bold white]Üretim Yüzdesi:[/bold white] %{self.account_data['production_modifier']}",
-                f"[bold white]Yönetim giderleri:[/bold white] %{round((self.account_data['admin_overhead'] * 100) - 100, 3)}",
+                "",
+                f"Şirket Adı: {self.account_data['name']}",
+                f"Para: ${self.account_data['money']}",
+                f"Level: {self.account_data['level']}",
+                f"Sıralama: {self.account_data['rank']}",
+                f"Perakende Yüzdesi: %{self.account_data['sales_modifier']}",
+                f"Üretim Yüzdesi: %{self.account_data['production_modifier']}",
+                f"Yönetim giderleri: %{round((self.account_data['admin_overhead'] * 100) - 100, 3)}",
+                "",
             ]
         )
 
-        # Wrap in panels
-
-        left_panel = Panel(img, border_style="cyan", width=40)  # limit width
-        right_panel = Panel(system_info, border_style="green", width=40)
-
-        # left_panel = Panel(img, border_style="cyan")
-        # right_panel = Panel(system_info, border_style="green")
-
-        # Print side by side
-        console.print(Columns([left_panel, right_panel]))
+        print(account_info)
 
     def get_owned_resources(self):
         try:
@@ -314,6 +286,7 @@ class SatisElemani:
         ]
 
     def get_resource_quality_array(self, resource_id):
+        self.get_owned_resources()
         resource_quality_array = [None] * 13
         for resource in self.owned_resources:
             if resource["kind"] == resource_id:
@@ -326,7 +299,6 @@ class SatisElemani:
     def get_sale_context(self, resource_id):
         resource_info = self.get_resource_object(resource_id)
         building_info = self.constants["buildings"][resource_info[1]["soldAt"]]
-        self.get_owned_resources()
         available_buildings = []
         acceleration = 1
         if self.acceleration_events is not None:
@@ -360,6 +332,7 @@ class SatisElemani:
         for building in available_buildings:
             building_level = building["size"]
             resource_quality_array = self.get_resource_quality_array(resource_id)
+            print(resource_quality_array)
             (
                 total_quantity,
                 total_cost,
@@ -443,6 +416,7 @@ menajer.sell_hours(60, 24)
 
 
 # YAPILACAKLAR:
+# YANLIS ZAMAN HESABI???
 # OPTİMUM FİYAT SAAT HESABINI DÜZELT
 # OPTİMUM FİYAT HESABI AĞIRLIKLI ORTALAMA DOĞRU MU KONTROL ET 345. SATIR PRİCE TO SELL HESABI
 # ÇIKIŞ YAPMA
