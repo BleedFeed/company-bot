@@ -1,5 +1,6 @@
 import json
 import logging
+import sys
 import time
 from os import getenv
 
@@ -409,10 +410,12 @@ class SatisElemani:
             logging.error("Exception occurred", exc_info=True)
 
 
+requested_hours = eval(sys.argv[1])
+print(f"{requested_hours} saatlik satış yapılacak")
 load_dotenv()
 menajer = SatisElemani()
 menajer.giris(getenv("E-MAIL"), getenv("PASSWORD"))
-menajer.sell_hours(60, 24)
+menajer.sell_hours(60, requested_hours)
 
 
 # YAPILACAKLAR:
