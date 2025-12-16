@@ -11,6 +11,8 @@ from requests.models import HTTPError
 from hash import lXt_py
 from profitCalculator import find_optimal_sale_for_hours
 
+RESOURCE_ID = 60
+
 
 class SatisElemani:
     def __init__(self):
@@ -415,12 +417,8 @@ print(f"{requested_hours} saatlik satış yapılacak")
 load_dotenv()
 menajer = SatisElemani()
 menajer.giris(getenv("E-MAIL"), getenv("PASSWORD"))
-menajer.sell_hours(60, requested_hours)
+menajer.sell_hours(RESOURCE_ID, requested_hours)
 
 
 # YAPILACAKLAR:
-# YANLIS ZAMAN HESABI???
-# OPTİMUM FİYAT SAAT HESABINI DÜZELT
-# OPTİMUM FİYAT HESABI AĞIRLIKLI ORTALAMA DOĞRU MU KONTROL ET 345. SATIR PRİCE TO SELL HESABI
 # ÇIKIŞ YAPMA
-# BORSADAN ALIŞ BELKİ?
