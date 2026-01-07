@@ -1,8 +1,15 @@
+import io
 import json
 import logging
+import os
 import sys
 import time
 from os import getenv
+from threading import ExceptHookArgs
+
+os.environ["PYTHONUTF8"] = "1"
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
+sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8")
 
 import requests
 from dotenv import load_dotenv
@@ -209,9 +216,9 @@ class SatisElemani:
                 f"Para: ${self.account_data['money']}",
                 f"Level: {self.account_data['level']}",
                 f"Sıralama: {self.account_data['rank']}",
-                f"Perakende Yüzdesi: %{self.account_data['sales_modifier']}",
-                f"Üretim Yüzdesi: %{self.account_data['production_modifier']}",
-                f"Yönetim giderleri: %{round((self.account_data['admin_overhead'] * 100) - 100, 3)}",
+                f"Perakende Yüzdesi (temel): %{self.account_data['sales_modifier']}",
+                f"Üretim Yüzdesi (temel): %{self.account_data['production_modifier']}",
+                f"Yönetim giderleri (temel): %{round((self.account_data['admin_overhead'] * 100) - 100, 3)}",
                 "",
             ]
         )
@@ -292,7 +299,7 @@ class SatisElemani:
         self.get_owned_resources()
         resource_quality_array = [None] * 13
         for resource in self.owned_resources:
-            if resource["kind"] == resource_id:
+            if resource["kind"] == resource_id and not resource["blocked"]:
                 resource_quality_array[resource["quality"]] = {
                     "amount": resource["amount"],
                     "cost": resource["cost"]["market"],
@@ -303,20 +310,22 @@ class SatisElemani:
         resource_info = self.get_resource_object(resource_id)
         building_info = self.constants["buildings"][resource_info[1]["soldAt"]]
         available_buildings = []
+        building_types = []
         acceleration = 1
         if self.acceleration_events is not None:
             for event in self.acceleration_events:
                 if event["kind"] == resource_id:
                     acceleration = round((100 + event["speedModifier"] / 100), 2)
-
         for building in self.account_data["buildings"]:
+            building_types.append(building["kind"])
             if (
                 "busy" not in building
                 and building["kind"] == resource_info[1]["soldAt"]
             ):
                 # if  building["kind"] == resource_info[1]["soldAt"]: # for testing
                 available_buildings.append(building)
-
+        print(f"Ürünün satılacağı bina tipi: {resource_info[1]['soldAt']}")
+        print(f"Bulunan binaların tipleri: {building_types}")
         return (
             resource_info,
             building_info,
@@ -331,17 +340,23 @@ class SatisElemani:
             available_buildings,
             acceleration,
         ) = self.get_sale_context(resource_id)
+        print(f"{len(available_buildings)} Binada satış yapılacak.")
 
         for building in available_buildings:
             building_level = building["size"]
             resource_quality_array = self.get_resource_quality_array(resource_id)
-            print(resource_quality_array)
+            print(
+                "Elimizdeki ürünler: ",
+                resource_quality_array,
+                "\n",
+            )
             (
                 total_quantity,
                 total_cost,
                 optimum_price,
                 seconds_to_finish,
                 average_quality,
+                wages,
             ) = find_optimal_sale_for_hours(
                 hours,
                 building_level,
@@ -362,12 +377,12 @@ class SatisElemani:
                 building_info,
                 self.constants["core"],
             )
-            print(f"quantity: {total_quantity}")
-            print(f"price: {optimum_price}")
-            print(f"average_quality: {average_quality}")
-            print(f"cost: {total_cost}")
-            print(f"seconds to finish: {seconds_to_finish}")
-            print("\n\n\n\n")
+            print(f"Miktar: {total_quantity}")
+            print(f"Satılan Fiyat: {optimum_price}$")
+            print(f"Ortalama kalite: {average_quality}")
+            print(f"Satılan Malların Maliyeti: {total_cost}$")
+            print(f"Satış Süresi (saniye): {seconds_to_finish}")
+            print(f"Ödenen maaşlar: {wages}$")
 
             self.sell_at_building(
                 building["id"],
@@ -376,6 +391,57 @@ class SatisElemani:
                 total_quantity,
                 seconds_to_finish,
             )
+
+        print("Başarım kontrol ediliyor...")
+        print("Başarım Alındı" if self.basarim_kontrol() else "Başarım alınamadı","\n")
+        print("Çıkış Yapılıyor...")
+        print("Çıkış yapıldı" if self.cikis_yap() else "Çıkış Yapılamadı")
+
+
+    def basarim_kontrol(self):
+        try:
+            basarim_url = "https://www.simcompanies.com/api/v2/no-cache/companies/me/achievements/"
+            (seconds, prot_hash) = self.generate_headers(basarim_url)
+            basarim_headers = self.headers | {
+                "X-CSRFToken": self.csrf,
+                "X-tz-offset": str(self.tz_offset),
+                "X-Ts": str(seconds),
+                "X-Prot": prot_hash,
+            }
+            basarim_response = self.s.get(basarim_url, headers=basarim_headers)
+            basarim_response.raise_for_status()
+            basarim_response_json = basarim_response.json()
+            for basarim in basarim_response_json:
+                if basarim["id"] == "prd-sold":
+                    return self.basarim_al()
+        except Exception:
+            logging.error("Exception occurred", exc_info=True)
+
+    def basarim_al(self):
+        try:
+            basarim_al_url = "https://www.simcompanies.com/api/v2/no-cache/companies/achievements/prd-sold/"
+            (seconds, prot_hash) = self.generate_headers(basarim_al_url)
+            basarim_al_headers = self.headers | {
+                "X-CSRFToken": self.csrf,
+                "X-tz-offset": str(self.tz_offset),
+                "X-Ts": str(seconds),
+                "X-Prot": prot_hash,
+            }
+            basarim_al_response = self.s.get(basarim_al_url, headers=basarim_al_headers)
+            basarim_al_response.raise_for_status()
+            return True
+        except Exception:
+            logging.error("Exception occurred", exc_info=True)
+
+    def cikis_yap(self):
+        try:
+            cikis_url = "https://www.simcompanies.com/signout/"
+            cikis_response = self.s.get(cikis_url)
+            cikis_response.raise_for_status()
+            return True
+        except Exception:
+            logging.error("Exception occurred", exc_info=True)
+
 
     def sell_at_building(
         self,
@@ -407,6 +473,7 @@ class SatisElemani:
             sell_response = self.s.post(url, headers=sell_headers, data=data)
             sell_response.raise_for_status()
             print("sanırım oldu bak bakim")
+            print("\n\n")
             time.sleep(0.5)
         except Exception:
             logging.error("Exception occurred", exc_info=True)
@@ -415,10 +482,14 @@ class SatisElemani:
 requested_hours = eval(sys.argv[1])
 print(f"{requested_hours} saatlik satış yapılacak")
 load_dotenv()
+
+
+resource_id_num = sys.argv[2] if len(sys.argv) > 2 else RESOURCE_ID
+print(f"Satılan Item ID: {resource_id_num}")
+
 menajer = SatisElemani()
 menajer.giris(getenv("E-MAIL"), getenv("PASSWORD"))
-menajer.sell_hours(RESOURCE_ID, requested_hours)
+menajer.sell_hours(int(resource_id_num), requested_hours)
 
 
 # YAPILACAKLAR:
-# ÇIKIŞ YAPMA

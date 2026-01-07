@@ -155,7 +155,6 @@ def calculate_retail(
             "wagesTotal": None,
             "secondsToFinish": None,
             "profit": None,
-            "profitPerSeconds": None,
         }
     wages = resource_info[1]["storeBaseSalary"] * building_level
     sales_modif = sales_modif_with_bonus + math.floor(skill_cmo / 3)
@@ -183,7 +182,6 @@ def calculate_retail(
             "wagesTotal": None,
             "secondsToFinish": None,
             "profit": None,
-            "profitPerSeconds": None,
         }
     revenue = price * quantity
     wages_total = math.ceil((total_time * wages * acceleration * overhead) / 60 / 60)
@@ -288,6 +286,7 @@ def calculate_optimum_price(
 ):
     optimum_price = None
     max_profit = 0
+    wages = 0
     seconds_to_finish = math.inf
 
     for i in range(0, int(resource_info[1]["averageRetailPrice"] * 20)):
@@ -316,8 +315,9 @@ def calculate_optimum_price(
             ):
                 max_profit = result["profit"]
                 seconds_to_finish = result["secondsToFinish"]
+                wages = result["wagesTotal"]
                 optimum_price = i / 10
-    return optimum_price, seconds_to_finish
+    return optimum_price, seconds_to_finish, wages
 
 
 def generate_price_seconds_array(
@@ -392,17 +392,19 @@ def find_optimal_sale_for_hours(
     while True:
         quantity = 0
         if highest_quality == -1:
-            print("kailte kontrol sonu envanterden cıkmadı hacı")
+            print("kalite kontrol sonu envanterden cıkmadı hacı")
             break
-        if resource_quality_array[highest_quality] is None:
+        if (
+            resource_quality_array[highest_quality] is None
+            or resource_quality_array[highest_quality]["amount"] <= 0
+        ):
             highest_quality -= 1
             continue
-
         quality = highest_quality
         quantity = resource_quality_array[quality]["amount"]
         cost = resource_quality_array[quality]["cost"]
 
-        _, seconds_to_finish = calculate_optimum_price(
+        _, seconds_to_finish,__ = calculate_optimum_price(
             building_level,
             resource_id,
             quantity,
@@ -438,7 +440,7 @@ def find_optimal_sale_for_hours(
     for index, quantity in enumerate(quality_quantity_array):
         average_quality += index * quantity / total_quantity
 
-    optimum_price, seconds_to_finish = calculate_optimum_price(
+    optimum_price, seconds_to_finish,___ = calculate_optimum_price(
         building_level,
         resource_id,
         total_quantity,
@@ -486,7 +488,7 @@ def find_optimal_sale_for_hours(
         highest_quality,
     )
 
-    optimum_price, seconds_to_finish = calculate_optimum_price(
+    optimum_price, seconds_to_finish, wages = calculate_optimum_price(
         building_level,
         resource_id,
         total_quantity,
@@ -504,4 +506,11 @@ def find_optimal_sale_for_hours(
         core_constants,
     )
 
-    return total_quantity, total_cost, optimum_price, seconds_to_finish, average_quality
+    return (
+        total_quantity,
+        total_cost,
+        optimum_price,
+        seconds_to_finish,
+        average_quality,
+        wages,
+    )

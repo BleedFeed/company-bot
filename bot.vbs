@@ -4,13 +4,17 @@ Dim shell, fso
 Dim expr
 Dim baseDir, logsDir
 Dim logPath, timestamp
-Dim pythonExe, botPath, cmd
-Dim envFile, envLines, line, parts, i
+Dim botPath, pythonExe, cmd
+Dim envFile, envLines, line, parts
 
 ' -------------------------
 ' Get argument
 ' -------------------------
-expr = WScript.Arguments(0)
+If WScript.Arguments.Count > 0 Then
+    expr = WScript.Arguments(0)
+Else
+    expr = ""
+End If
 
 ' -------------------------
 ' Create objects
@@ -33,6 +37,38 @@ If Not fso.FolderExists(logsDir) Then
 End If
 
 ' -------------------------
+' Read .env file
+' -------------------------
+pythonExe = ""
+
+If fso.FileExists(envFile) Then
+    Set envLines = fso.OpenTextFile(envFile, 1)
+
+    Do Until envLines.AtEndOfStream
+        line = Trim(envLines.ReadLine)
+
+        If InStr(line, "=") > 0 Then
+            parts = Split(line, "=")
+            If UCase(Trim(parts(0))) = "PYTHON_EXE" Then
+                pythonExe = Trim(parts(1))
+            End If
+        End If
+    Loop
+
+    envLines.Close
+End If
+
+If pythonExe = "" Then
+    WScript.Echo "ERROR: PYTHON_EXE not found in .env"
+    WScript.Quit 1
+End If
+
+' -------------------------
+' Bot path (bot.py)
+' -------------------------
+botPath = """" & baseDir & "\bot.py"""  ' quote path
+
+' -------------------------
 ' Timestamp
 ' -------------------------
 timestamp = Year(Now) & "-" & _
@@ -46,43 +82,10 @@ timestamp = Year(Now) & "-" & _
 logPath = logsDir & "\log_" & timestamp & ".txt"
 
 ' -------------------------
-' Default Python
-' -------------------------
-pythonExe = "python"  ' fallback if .env not found
-
-' -------------------------
-' Read .env file if it exists
-' -------------------------
-If fso.FileExists(envFile) Then
-    envLines = Split(fso.OpenTextFile(envFile, 1).ReadAll, vbCrLf)
-    For i = 0 To UBound(envLines)
-        line = Trim(envLines(i))
-        If Left(line, 11) = "PYTHON_PATH" Then
-            parts = Split(line, "=")
-            If UBound(parts) = 1 Then
-                pythonExe = Trim(parts(1))
-                
-                ' Handle relative path
-                If Left(pythonExe, 2) = ".\" Then
-                    pythonExe = fso.BuildPath(baseDir, Mid(pythonExe, 3))
-                End If
-            End If
-            Exit For
-        End If
-    Next
-End If
-
-' -------------------------
-' Bot path
-' -------------------------
-botPath = """" & baseDir & "\bot.py"""  ' quote path in case of spaces
-
-' -------------------------
 ' Build command
 ' -------------------------
-cmd = "cmd /c " & _
-      "chcp 65001>nul && " & _
-      """" & pythonExe & """ -X utf8 " & botPath & " """ & expr & """ > """ & logPath & """ 2>&1"
+cmd = "cmd /c chcp 65001>nul && """ & pythonExe & """ -X utf8 " & botPath & _
+      " """ & expr & """ > """ & logPath & """ 2>&1"
 
 ' -------------------------
 ' Run hidden, wait for completion
