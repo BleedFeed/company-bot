@@ -427,7 +427,7 @@ class SatisElemani:
                 "X-Ts": str(seconds),
                 "X-Prot": prot_hash,
             }
-            basarim_al_response = self.s.get(basarim_al_url, headers=basarim_al_headers)
+            basarim_al_response = self.s.delete(basarim_al_url, headers=basarim_al_headers)
             basarim_al_response.raise_for_status()
             return True
         except Exception:
